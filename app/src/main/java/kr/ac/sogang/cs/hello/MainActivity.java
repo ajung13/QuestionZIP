@@ -1,4 +1,5 @@
 package kr.ac.sogang.cs.hello;
+//중간발표때 사용한 코드
 
 import android.content.Intent;
 import android.os.Bundle;
