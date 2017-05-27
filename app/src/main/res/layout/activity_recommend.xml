@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:context="kr.ac.sogang.cs.hello.Recommend">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/backbutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onBackButton"
+            android:text="back"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:background="#33FAE041" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="남은 시간 0:00"
+            android:textSize="20dp"
+            android:layout_marginLeft="100dp"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+
+
+    <ScrollView
+       android:id="@+id/verScroll"
+       android:layout_width="match_parent"
+       android:layout_height="470dp">
+       <FrameLayout
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+           <TextView
+               android:id="@+id/question11"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="25dp"
+               android:layout_marginRight="25dp"
+               android:textColor="#000000"
+               android:text="Error"
+               android:textSize="20dp"
+               android:visibility="visible"
+               android:lineSpacingExtra="10dp"
+               />
+
+           <TextView
+               android:id="@+id/question12"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="25dp"
+               android:layout_marginRight="25dp"
+               android:text="Question no.1"
+               android:textColor="#000000"
+               android:textSize="20dp"
+               android:visibility="invisible"
+               android:lineSpacingExtra="10dp"
+               app:layout_constraintLeft_toLeftOf="parent" />
+
+           <TextView
+               android:id="@+id/question13"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="25dp"
+               android:layout_marginRight="25dp"
+               android:text="Question no.2"
+               android:textColor="#000000"
+               android:textSize="20dp"
+               android:visibility="invisible"
+               android:lineSpacingExtra="10dp"
+               app:layout_constraintLeft_toLeftOf="parent" />
+
+           <TextView
+               android:id="@+id/question14"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginLeft="25dp"
+               android:layout_marginRight="25dp"
+               android:text="Question no.3"
+               android:textColor="#000000"
+               android:textSize="20dp"
+               android:visibility="invisible"
+               android:lineSpacingExtra="10dp"
+               app:layout_constraintLeft_toLeftOf="parent" />
+
+       </FrameLayout>
+     </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/questionb1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRecommendPrev"
+            android:background="#FAE041"
+            android:text="prev"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            />
+
+        <Button
+            android:id="@+id/questionb2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRecommendNext"
+            android:background="#FAE041"
+            android:text="next"
+            android:layout_marginLeft="150dp"
+            android:layout_marginTop="5dp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
