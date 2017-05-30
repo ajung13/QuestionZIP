@@ -1,6 +1,8 @@
 package kr.ac.sogang.cs.hello;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ScrollView;
@@ -15,6 +17,9 @@ public class Recommend extends AppCompatActivity {
     int questionNum = 0;
     TextView[] q = new TextView[5];
     ScrollView scrl;
+    Handler mHandler;
+    public int mainTime = 0;
+//    TextView timer = (TextView) findViewById(R.id.q_timer);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,24 @@ public class Recommend extends AppCompatActivity {
         q[2] = (TextView) findViewById(R.id.question13);
         q[3] = (TextView) findViewById(R.id.question14);
         scrl = (ScrollView) findViewById(R.id.verScroll);
+
+
+        mHandler = new Handler(){
+            public void handleMessage(Message msg){
+                TextView timertest = (TextView)findViewById(R.id.q_timer);
+                super.handleMessage(msg);
+                int div = msg.what;
+                int min = mainTime / 60;
+                int sec = mainTime % 60;
+                String strTime = String.format("%02d : %02d", min, sec);
+                this.sendEmptyMessageDelayed(0,1000);
+                timertest.setText(strTime);
+                timertest.invalidate();
+                mainTime++;
+            }
+        };
+        mHandler.sendEmptyMessage(1);
+        // timer
 
 
         try{
@@ -114,6 +137,7 @@ public class Recommend extends AppCompatActivity {
 
 
     }
+
 
     public void onBackButton(View v){
         Toast.makeText(getApplicationContext(), "Back to menu", Toast.LENGTH_LONG).show();
