@@ -9,9 +9,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import Jama.Matrix;
 
 public class Recommend extends AppCompatActivity {
     int questionNum = 0;
@@ -19,6 +20,7 @@ public class Recommend extends AppCompatActivity {
     ScrollView scrl;
     Handler mHandler;
     public int mainTime = 0;
+    Matrix mR;
 //    TextView timer = (TextView) findViewById(R.id.q_timer);
 
     @Override
@@ -48,10 +50,11 @@ public class Recommend extends AppCompatActivity {
             }
         };
         mHandler.sendEmptyMessage(1);
-        // timer
+
+        phptest();
 
 
-        try{
+ /*       try{
             StringBuffer data = new StringBuffer();
             FileInputStream fis = openFileInput("wrongquestion.txt");
             BufferedReader buffer = new BufferedReader(new InputStreamReader(fis));
@@ -68,76 +71,58 @@ public class Recommend extends AppCompatActivity {
         }catch(Exception e){
             e.printStackTrace();
             q[0].setText("아직 틀린 문제를 업로드 하지 않았습니다.\n임의로 문제를 추천할까요?");
-        }
-
-        String temp = "1. 다음 글에서 필자가 주장하는 바로 가장 적절한 것은?\n" +
-                "One of the most difficult things many successful people do is\n" +
-                "to challenge their own beliefs. Convictions that may have once\n" +
-                "been true and useful may change. Friedrich Nietzsche said it\n" +
-                "well when he said, “It’s not simply a question of having the\n" +
-                "courage of one’s convictions, but at times having the courage to\n" +
-                "attack one’s convictions.” That’s how you grow. That’s how you\n" +
-                "mature. That’s how you develop. Look at Tolstoy himself, a\n" +
-                "great example of a man who was willing to grow because he\n" +
-                "realized that he had to attack, at times, his own convictions.\n" +
-                "Socrates said it well when he said, “The unexamined life is not\n" +
-                "worth living.” But we need to add that the examined life is\n" +
-                "painful, risky, full of vulnerability. And, yet, to revitalize public\n" +
-                "conversation, we have to ensure that self-criticism and\n" +
-                "self-correction are accented in our individual lives, as well as\n" +
-                "in our society and world.\n" +
-                "① 성장을 위해 자신의 신념에 도전하라.\n" +
-                "② 성공을 위해 역경을 밑거름으로 삼으라.\n" +
-                "③ 타인의 비판에 대해 수용적 태도를 가지라.\n" +
-                "④ 타인을 비판하기 전에 자신을 먼저 돌아보라.\n" +
-                "⑤ 자신의 신념을 실행에 옮기는 용기를 키우라.\n";
-        q[1].setText(temp);
-
-        temp = "2. 다음 글의 요지로 가장 적절한 것은?\n" +
-                "Why do we need to routinely have the oil changed in our\n" +
-                "automobiles? Why do we need to see our dentist twice a year?\n" +
-                "The simple answer to these questions is preventative\n" +
-                "maintenance. How many times have you heard of stories where\n" +
-                "people ignored the warning signs and adverse situations\n" +
-                "seemed to present themselves overnight? A friend of mine\n" +
-                "knew there was a nail in one of his front tires, but there didn’t\n" +
-                "seem to be any obvious damage to the tire. He chose to ignore\n" +
-                "the nail until he found himself on the side of the highway with a\n" +
-                "flat tire. He later told me that before he experienced the\n" +
-                "embarrassment of having a flat, he “planned on getting it fixed\n" +
-                "when he had the time”. If he would have only taken a few\n" +
-                "minutes to get the nail removed, he most likely would not have\n" +
-                "received a flat tire on that particular day.\n" +
-                "① 문제 발생을 막기 위해 사전 예방이 필요하다.\n② 안전 장비 착용을 의무화하는 것이 중요하다.\n" +
-                "③ 사고 발생 시 침착한 대응이 바람직하다.\n ④ 어려운 일은 여럿이 함께 해결하는 것이 좋다.\n" +
-                "⑤ 안전사고 예방에 대한 철저한 교육이 요구된다.";
-        q[2].setText(temp);
-
-        temp = "3. 다음 글의 주제로 가장 적절한 것은?\n" +
-                "One of the reasons for difficulty in achieving one’s optimal\n" +
-                "weight is poor nutrient timing. When you eat is almost as\n" +
-                "important as what you eat, because the same nutrients have\n" +
-                "different effects on the body when consumed at different times.\n" +
-                "The body’s energy needs change throughout the day. It’s\n" +
-                "important to concentrate your food intake during those times\n" +
-                "when your body’s energy needs are greatest and not to\n" +
-                "consume more calories than your body needs to meet its\n" +
-                "immediate energy needs at any time. When you consume\n" +
-                "calories at times of peak energy need, most of them are used to\n" +
-                "fuel your muscles and nervous system, to synthesize muscle\n" +
-                "tissue, and to replenish muscle fuel stores. When you consume\n" +
-                "more calories than you need at any time, those excess calories\n" +
-                "will be stored as body fat. * replenish: 다시 채우다\n" +
-                "① the effects of nutrient timing on psychological states\n" +
-                "② the roles of essential nutrients to improve your health\n" +
-                "③ the correlation between slow eating and calorie intake\n" +
-                "④ the benefits of maintaining optimal weight for your health\n" +
-                "⑤ the importance of nutrient timing to reach optimal weight\n";
-        q[3].setText(temp);
+        }*/
 
 
     }
 
+    public void phptest(){
+        String test = "http://163.239.78.130/SelectR.php";
+        URLConnector task = new URLConnector(test);
+        task.start();
+        try{
+            task.join();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        String result = task.getResult();
+        ParseJSON(result);
+        ParseJSON(result);
+        return;
+    }
+
+
+    public void ParseJSON(String target){
+        try{
+            JSONObject json = new JSONObject(target);
+            JSONArray arr = json.getJSONArray("result");
+            for(int i=0; i<arr.length(); i++){
+                JSONObject json2 = arr.getJSONObject(i);
+                for(int j=0; j<10; j++){
+                    String tmp = json2.get("q"+j).toString();
+                    mR.set(i, j, Double.parseDouble(tmp));
+                }
+            }
+            String tmp = strung(mR);
+            System.out.println(tmp);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return;
+    }
+
+
+    public static String strung(Matrix m) {
+        StringBuffer sb = new StringBuffer();
+        for (int r = 0; r < m.getRowDimension(); ++ r) {
+            for (int c = 0; c < m.getColumnDimension(); ++c)
+                sb.append(m.get(r, c)).append("\t");
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
     public void onBackButton(View v){
         Toast.makeText(getApplicationContext(), "Back to menu", Toast.LENGTH_LONG).show();
@@ -151,6 +136,7 @@ public class Recommend extends AppCompatActivity {
             scrl.smoothScrollTo(0,0);
             q[questionNum].setVisibility(View.VISIBLE);
         }
+        return;
     }
 
     public void onRecommendNext(View v){
@@ -160,5 +146,6 @@ public class Recommend extends AppCompatActivity {
             scrl.smoothScrollTo(0,0);
             q[questionNum].setVisibility(View.VISIBLE);
         }
+        return;
     }
 }
