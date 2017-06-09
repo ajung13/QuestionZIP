@@ -1,16 +1,18 @@
 package kr.ac.sogang.cs.hello;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class UploadQuestion extends AppCompatActivity {
 
@@ -18,18 +20,13 @@ public class UploadQuestion extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_question);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 
     public void onUpload(View v){
         String writedata = "";
-
-        final RadioGroup rg = (RadioGroup)findViewById(R.id.moigosa);
-        int monthinput = rg.getCheckedRadioButtonId();
-        // monthinput: Radio button that user clicked
-        RadioButton rb = (RadioButton)findViewById(monthinput);
-        // now we can print "rb.getText().toString()"
-        writedata += rb.getText().toString();
-        writedata += "\n";
 
         final CheckBox[] cb = new CheckBox[10];
         cb[0] = (CheckBox)findViewById(R.id.rq1);
@@ -43,7 +40,19 @@ public class UploadQuestion extends AppCompatActivity {
         cb[8] = (CheckBox)findViewById(R.id.rq9);
         cb[9] = (CheckBox)findViewById(R.id.rq10);
 
-        boolean flag=false;
+        for(int i=0; i<10; i++){
+            if(cb[i].isChecked()){
+                boolean result = phpTest(i);     //start from 0
+                if(result)
+                    Toast.makeText(getApplication(), "upload completed: "+(i+19), Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getApplication(), "upload failed: "+(i+19), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        finish();
+
+/*        boolean flag=false;
         for(int i=0; i<10; i++){
             if(cb[i].isChecked()) {
                 if(flag){
@@ -67,12 +76,53 @@ public class UploadQuestion extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), "Upload Error", Toast.LENGTH_LONG).show();
             finish();
-        }
+        }*/
     }
 
-    public void onBackButton(View v){
-        Toast.makeText(getApplicationContext(), "Back to menu", Toast.LENGTH_LONG).show();
-        finish();
+    public boolean phpTest(final int qnum){
+        String urladdr = "http://questionzip.dothome.co.kr/UploadR.php";
+        try{
+            String postData = "qnum=" + qnum;
+            URL url = new URL(urladdr);
+            int responsecode;
+            int redirectedCount = 0;
+
+            while(redirectedCount <= 2){
+                HttpURLConnection conn2 = (HttpURLConnection)url.openConnection();
+                conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                conn2.setRequestProperty("Connection", "close");
+                conn2.setRequestMethod("POST");
+                conn2.setConnectTimeout(10000);
+                conn2.setDoOutput(true);
+                conn2.setDoInput(true);
+                conn2.setUseCaches(false);
+                conn2.connect();
+//                responsecode = conn2.getResponseCode();
+                responsecode = HttpURLConnection.HTTP_OK;
+                if(responsecode==HttpURLConnection.HTTP_OK){
+                    OutputStream os = conn2.getOutputStream();
+                    os.write(postData.getBytes("EUC-KR"));
+                    os.flush();
+                    os.close();
+                    conn2.disconnect();
+                    return true;
+                }
+                else if(responsecode==HttpURLConnection.HTTP_MOVED_PERM ||
+                        responsecode==HttpURLConnection.HTTP_MOVED_TEMP){
+                    String redirectURL = conn2.getHeaderField("Location");
+                    url = new URL(redirectURL);
+                }
+                redirectedCount++;
+            }
+        } catch(Exception e){
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            Log.e("phpTest", exceptionAsString);
+            return false;
+        }
+        return false;
     }
+
 
 }
