@@ -52,31 +52,6 @@ public class UploadQuestion extends AppCompatActivity {
 
         finish();
 
-/*        boolean flag=false;
-        for(int i=0; i<10; i++){
-            if(cb[i].isChecked()) {
-                if(flag){
-                    writedata += ", ";
-                    flag = true;
-                }
-                writedata += cb[i].getText().toString();
-                writedata += "번 ";
-            }
-        }
-        writedata += "\n";
-
-        try{
-            FileOutputStream fos = openFileOutput("wrongquestion.txt", Context.MODE_APPEND);
-            PrintWriter out = new PrintWriter(fos);
-            out.print(writedata);
-            out.close();
-            Toast.makeText(getApplicationContext(), "업로드가 완료되었습니다!", Toast.LENGTH_LONG).show();
-            finish();
-        } catch (Exception e){
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Upload Error", Toast.LENGTH_LONG).show();
-            finish();
-        }*/
     }
 
     public boolean phpTest(final int qnum){

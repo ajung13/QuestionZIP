@@ -12,10 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    private final String[] navItems = {"내 정보", "오답노트", "사용방법", "Contact"};
+    private final String[] navItems = {"내 정보", "오답노트", "사용방법"};
     private ListView lvNavList;
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
@@ -46,19 +45,19 @@ public class MainActivity extends AppCompatActivity {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+            Intent intent;
             switch (position) {
                 case 0:
-                    Intent intent = new Intent(getApplicationContext(), myinfoActivity.class);
+                    intent = new Intent(getApplicationContext(), myinfoActivity.class);
                     startActivity(intent);
                     break;
                 case 1:
-                    Toast.makeText(getApplicationContext(), "오답노트(예정)", Toast.LENGTH_LONG).show();
+                    intent = new Intent(getApplicationContext(), wrongNoteActivity.class);
+                    startActivity(intent);
                     break;
                 case 2:
-                    Toast.makeText(getApplicationContext(), "사용방법(예정)", Toast.LENGTH_LONG).show();
-                    break;
-                case 3:
-                    Toast.makeText(getApplicationContext(), "개발자 contact (예정)", Toast.LENGTH_LONG).show();
+                    intent = new Intent(getApplicationContext(), ManualActivity.class);
+                    startActivity(intent);
                     break;
             }
             dlDrawer.closeDrawer(lvNavList);

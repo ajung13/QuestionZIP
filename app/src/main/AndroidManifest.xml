@@ -23,7 +23,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".myinfoActivity" />
-        <activity android:name=".ScoringActivity"></activity>
+        <activity android:name=".ScoringActivity" />
+        <activity android:name=".wrongNoteActivity" />
+        <activity android:name=".ManualActivity"></activity>
     </application>
 
 </manifest>
