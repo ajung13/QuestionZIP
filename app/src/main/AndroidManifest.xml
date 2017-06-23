@@ -25,7 +25,8 @@
         <activity android:name=".myinfoActivity" />
         <activity android:name=".ScoringActivity" />
         <activity android:name=".wrongNoteActivity" />
-        <activity android:name=".ManualActivity"></activity>
+        <activity android:name=".ManualActivity" />
+        <activity android:name=".PracticalActivity"></activity>
     </application>
 
 </manifest>

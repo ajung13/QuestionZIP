@@ -77,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void onButton2Clicked(View v){
+        Intent intent = new Intent(getApplicationContext(), PracticalActivity.class);
+        startActivity(intent);
+    }
+    public void onButton3Clicked(View v){
         Intent intent = new Intent(getApplicationContext(), UploadQuestion.class);
         startActivity(intent);
     }
