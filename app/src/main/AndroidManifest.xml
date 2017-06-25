@@ -26,7 +26,8 @@
         <activity android:name=".ScoringActivity" />
         <activity android:name=".wrongNoteActivity" />
         <activity android:name=".ManualActivity" />
-        <activity android:name=".PracticalActivity"></activity>
+        <activity android:name=".PracticalActivity" />
+        <activity android:name=".DialogActivity" android:theme = "@style/Theme.AppCompat.Light.Dialog"></activity>
     </application>
 
 </manifest>

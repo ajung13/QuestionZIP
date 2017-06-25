@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -18,8 +22,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class PracticalActivity extends AppCompatActivity {
+    final int questions = 10;
     int questionNum = 0;
     TextView[] q = new TextView[6];
+    TextView q_pr;
     ImageView[] ans_image = new ImageView[5];
     int[] userAnswer = {-1, -1, -1, -1, -1};
     int[] questionAnswer = new int[5];
@@ -30,7 +36,7 @@ public class PracticalActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_practical);
+        setContentView(R.layout.activity_recommend);
 
         q[0] = (TextView) findViewById(R.id.question10);
         q[1] = (TextView) findViewById(R.id.question11);
@@ -63,8 +69,141 @@ public class PracticalActivity extends AppCompatActivity {
         };
         mHandler.sendEmptyMessage(1);
 
-//        recommend();
-        viewQuestions();
+        q_pr = (TextView)findViewById(R.id.q_process);
+        q_pr.setText(questionNum + "/5");
+
+        recommend();
+    }
+
+    private void recommend(){
+        int[] randidx = new int[5];
+        for(int i=0; i<5; i++){
+            randidx[i] = (int)(Math.random()*questions);
+            for(int j=0; j<i; j++){
+                if(randidx[i] == randidx[j]){
+                    i--;
+                    break;
+                }
+            }
+        }
+/*        String tmp = "모의고사 기출문제 중 랜덤으로 문제를 추천하겠습니다\n랜덤문제: ";
+        for(int i=0; i<5; i++)
+            tmp += randidx[i] + " ";
+        tmp += "\n";
+        q[0].setText(tmp);*/
+        q[0].setText("모의고사 기출문제 중 랜덤으로 문제를 추천하겠습니다");
+        viewQuestions(randidx);
+    }
+
+    public void viewQuestions(int index[]){
+        String urladdr = "http://questionzip.dothome.co.kr/SelectQ.php";
+        String result = connectionURL(urladdr);
+        ParseJSON_Q(result, index);
+    }
+
+    public void ParseJSON_Q(String target, int index[]){
+        String tmp;
+        try{
+            JSONObject json = new JSONObject(target);
+            JSONArray arr = json.getJSONArray("result");
+            for(int i=0; i<5; i++){
+                JSONObject json2 = arr.getJSONObject(index[i]);
+                tmp = "";
+                tmp += json2.get("q") + "\n\n";
+                tmp += json2.get("zimoon") + "\n\n";
+                tmp += ("① " + json2.get("sol1") + "\n");
+                tmp += ("② " + json2.get("sol2") + "\n");
+                tmp += ("③ " + json2.get("sol3") + "\n");
+                tmp += ("④ " + json2.get("sol4") + "\n");
+                tmp += ("⑤ " + json2.get("sol5") + "\n");
+                q[i+1].setText(tmp);
+                tmp = "";
+                tmp += json2.get("answer");
+                questionAnswer[i] = Integer.parseInt(tmp);
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onBackButton(View v){
+        Toast.makeText(getApplicationContext(), "Back to menu", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    public void onRecommendPrev(View v){
+        if(questionNum!=0){
+            q[questionNum].setVisibility(View.INVISIBLE);
+            questionNum--;
+            scrl.smoothScrollTo(0,0);
+            q[questionNum].setVisibility(View.VISIBLE);
+            if(questionNum!=0)
+                viewAnswer(userAnswer[questionNum-1]-1);
+            else
+                viewAnswer(-1);
+        }
+        q_pr.setText(questionNum + "/5");
+    }
+
+    public void onRecommendNext(View v){
+        if(questionNum!=5){
+            q[questionNum].setVisibility(View.INVISIBLE);
+            questionNum++;
+            scrl.smoothScrollTo(0,0);
+            q[questionNum].setVisibility(View.VISIBLE);
+            viewAnswer(userAnswer[questionNum-1]-1);
+
+            q_pr.setText(questionNum + "/5");
+        }
+        else{
+            if(userAnswer[0]==-1 || userAnswer[1]==-1 || userAnswer[2]==-1 || userAnswer[3]==-1 || userAnswer[4]==-1 ) {
+                startActivity(new Intent(this, DialogActivity.class));
+            }
+            else {
+                int answer = 0;         //00000~11111 까지의 이진수처럼 다룬다 5문제 각각 맞으면 0, 틀리면 1
+                for(int i=0; i<5; i++){
+                    if(userAnswer[i] != questionAnswer[i]){
+                        answer++;
+                    }
+                    if(i != 4)    answer *= 10;
+                }
+                Intent intent = new Intent(PracticalActivity.this, ScoringActivity.class);
+                intent.putExtra("prevActivity", 2);
+                intent.putExtra("timer", mainTime);
+                intent.putExtra("answer", answer);
+                startActivity(intent);
+                finish();
+            }
+        }
+    }
+
+    public void ansSelected(View v){
+        int selected = -1;
+
+        switch(v.getId()){
+            case R.id.answer1:
+                selected = 1;     break;
+            case R.id.answer2:
+                selected = 2;     break;
+            case R.id.answer3:
+                selected = 3;     break;
+            case R.id.answer4:
+                selected = 4;     break;
+            case R.id.answer5:
+                selected = 5;     break;
+            default:              break;
+        }
+
+        viewAnswer(selected-1);
+        if(questionNum!=0)
+            userAnswer[questionNum-1] = selected;
+    }
+
+    private void viewAnswer(int selected){
+        for(int i=0; i<5; i++)
+            ans_image[i].setAlpha(0);
+        if(selected > -1)
+            ans_image[selected].setAlpha(200);
     }
 
     public String connectionURL(String urladdr){
@@ -111,95 +250,5 @@ public class PracticalActivity extends AppCompatActivity {
 
         return result;
     }
-/*    public void recommend(){
-        String urladdr = "http://questionzip.dothome.co.kr/SelectR2.php";
-        String result = "";
 
-        result = connectionURL(urladdr);
-
-        ParseJSON_R(result);
-        q[0].setText("Parsing Completed");
-        matrix_factorization();
-        q[0].setText("Calculating matrix R Completed");
-        sort_recommend();
-    }*/
-
-    public void viewQuestions(){
-        q[0].setText("first");
-        q[1].setText("second");
-        q[2].setText("third");
-        q[3].setText("fourth");
-        q[4].setText("fifth");
-        q[5].setText("sixth");
-/*        if(index[0]!=-1){
-            String urladdr = "http://questionzip.dothome.co.kr/SelectQ.php";
-            String result = connectionURL(urladdr);
-            ParseJSON_Q(result);
-        }*/
-    }
-
-    public void onRecommendPrev(View v){
-        if(questionNum!=0){
-            q[questionNum].setVisibility(View.INVISIBLE);
-            questionNum--;
-            scrl.smoothScrollTo(0,0);
-            q[questionNum].setVisibility(View.VISIBLE);
-            if(questionNum!=0)
-                viewAnswer(userAnswer[questionNum-1]-1);
-        }
-    }
-
-    public void onRecommendNext(View v){
-        if(questionNum!=5){
-            q[questionNum].setVisibility(View.INVISIBLE);
-            questionNum++;
-            scrl.smoothScrollTo(0,0);
-            q[questionNum].setVisibility(View.VISIBLE);
-            viewAnswer(userAnswer[questionNum-1]-1);
-        }
-        else{
-            Intent intent = new Intent(PracticalActivity.this, ScoringActivity.class);
-            intent.putExtra("a1", userAnswer[0]);
-            intent.putExtra("a2", userAnswer[1]);
-            intent.putExtra("a3", userAnswer[2]);
-            intent.putExtra("a4", userAnswer[3]);
-            intent.putExtra("a5", userAnswer[4]);
-            intent.putExtra("ra1", questionAnswer[0]);
-            intent.putExtra("ra2", questionAnswer[1]);
-            intent.putExtra("ra3", questionAnswer[2]);
-            intent.putExtra("ra4", questionAnswer[3]);
-            intent.putExtra("ra5", questionAnswer[4]);
-            startActivity(intent);
-            finish();
-        }
-    }
-
-    public void ansSelected(View v){
-        int selected = -1;
-
-        switch(v.getId()){
-            case R.id.answer1:
-                selected = 1;     break;
-            case R.id.answer2:
-                selected = 2;     break;
-            case R.id.answer3:
-                selected = 3;     break;
-            case R.id.answer4:
-                selected = 4;     break;
-            case R.id.answer5:
-                selected = 5;     break;
-            default:              break;
-        }
-
-        viewAnswer(selected-1);
-        if(questionNum!=0)
-            userAnswer[questionNum-1] = selected;
-    }
-
-    private void viewAnswer(int selected){
-        for(int i=0; i<5; i++)
-            ans_image[i].setAlpha(0);
-        if(selected > -1)
-            ans_image[selected].setAlpha(100);
-    }
 }

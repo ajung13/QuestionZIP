@@ -4,13 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /* scoring activity는 recommend activity 또는 practical activity에서
 * 불러야만 나타나는 activity이다
 * scoring activity를 부를 때 전달할 parameter들:
 * int prevActivity: 이전에 recommend였으면 1, practical이었으면 2
-* float timer: 문제 푸는데 소요된 시간
+* int timer: 문제 푸는데 소요된 시간
 * int answer: 00000~11111 까지의 이진수처럼 다룬다 5문제 각각 맞으면 0, 틀리면 1
  */
 
@@ -20,6 +21,29 @@ public class ScoringActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoring);
+
+        Intent intent = getIntent();
+
+        TextView el_time = (TextView)findViewById(R.id.el_time);
+        int min, sec;
+        min = intent.getIntExtra("timer", -1);
+        sec = min%60;
+        min /= 60;
+        el_time.setText(String.format("%02d : %02d", min, sec));
+
+        TextView[] score = new TextView[5];
+        score[0] = (TextView)findViewById(R.id.score11);
+        score[1] = (TextView)findViewById(R.id.score12);
+        score[2] = (TextView)findViewById(R.id.score13);
+        score[3] = (TextView)findViewById(R.id.score14);
+        score[4] = (TextView)findViewById(R.id.score15);
+
+        int answer = intent.getIntExtra("answer", -1);
+        for(int i=0; i<5; i++){
+            if(answer%10 == 1)
+                score[4-i].setText("X");
+            answer /= 10;
+        }
 
         //print the answer of user
 /*        Intent intent = getIntent();
@@ -69,8 +93,22 @@ public class ScoringActivity extends AppCompatActivity {
     }
 
     public void moreQuestion(View v){
-        Intent intent = new Intent(ScoringActivity.this, Recommend.class);
-        startActivity(intent);
+        Intent cur_intent = getIntent();
+        int prevActivity = cur_intent.getIntExtra("prevActivity", -1);
+        Intent next_intent;
+        switch (prevActivity){
+            case 1:
+                next_intent = new Intent(ScoringActivity.this, Recommend.class);
+                startActivity(next_intent);
+                break;
+            case 2:
+                next_intent = new Intent(ScoringActivity.this, PracticalActivity.class);
+                startActivity(next_intent);
+                break;
+            default:
+                Toast.makeText(getApplicationContext(), "Error exists", Toast.LENGTH_LONG).show();
+                break;
+        }
         finish();
     }
 

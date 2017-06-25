@@ -27,6 +27,7 @@ public class Recommend extends AppCompatActivity {
     final int row = 3, column = 10;
     int questionNum = 0;
     TextView[] q = new TextView[6];
+    TextView q_pr;
     ImageView[] ans_image = new ImageView[5];
     int[] userAnswer = {-1, -1, -1, -1, -1};
     int[] questionAnswer = new int[5];
@@ -75,6 +76,9 @@ public class Recommend extends AppCompatActivity {
             }
         };
         mHandler.sendEmptyMessage(1);
+
+        q_pr = (TextView)findViewById(R.id.q_process);
+        q_pr.setText(questionNum + "/5");
 
         recommend();
         viewQuestions();
@@ -173,13 +177,13 @@ public class Recommend extends AppCompatActivity {
             for(int i=0; i<5; i++){
                 JSONObject json2 = arr.getJSONObject(index[i]);
                 tmp = "";
-                tmp += json2.get("q") + "\n";
+                tmp += json2.get("q") + "\n\n";
                 tmp += json2.get("zimoon") + "\n\n";
-                tmp += json2.get("sol1") + "\n";
-                tmp += json2.get("sol2") + "\n";
-                tmp += json2.get("sol3") + "\n";
-                tmp += json2.get("sol4") + "\n";
-                tmp += json2.get("sol5") + "\n";
+                tmp += ("① " + json2.get("sol1") + "\n");
+                tmp += ("② " + json2.get("sol2") + "\n");
+                tmp += ("③ " + json2.get("sol3") + "\n");
+                tmp += ("④ " + json2.get("sol4") + "\n");
+                tmp += ("⑤ " + json2.get("sol5") + "\n");
                 q[i+1].setText(tmp);
                 tmp = "";
                 tmp += json2.get("answer");
@@ -284,7 +288,10 @@ public class Recommend extends AppCompatActivity {
             q[questionNum].setVisibility(View.VISIBLE);
             if(questionNum!=0)
                 viewAnswer(userAnswer[questionNum-1]-1);
+            else
+                viewAnswer(-1);
         }
+        q_pr.setText(questionNum + "/5");
     }
 
     public void onRecommendNext(View v){
@@ -294,21 +301,28 @@ public class Recommend extends AppCompatActivity {
             scrl.smoothScrollTo(0,0);
             q[questionNum].setVisibility(View.VISIBLE);
             viewAnswer(userAnswer[questionNum-1]-1);
+
+            q_pr.setText(questionNum + "/5");
         }
         else{
-            Intent intent = new Intent(Recommend.this, ScoringActivity.class);
-            intent.putExtra("a1", userAnswer[0]);
-            intent.putExtra("a2", userAnswer[1]);
-            intent.putExtra("a3", userAnswer[2]);
-            intent.putExtra("a4", userAnswer[3]);
-            intent.putExtra("a5", userAnswer[4]);
-            intent.putExtra("ra1", questionAnswer[0]);
-            intent.putExtra("ra2", questionAnswer[1]);
-            intent.putExtra("ra3", questionAnswer[2]);
-            intent.putExtra("ra4", questionAnswer[3]);
-            intent.putExtra("ra5", questionAnswer[4]);
-            startActivity(intent);
-            finish();
+            if(userAnswer[0]==-1 || userAnswer[1]==-1 || userAnswer[2]==-1 || userAnswer[3]==-1 || userAnswer[4]==-1 ) {
+                startActivity(new Intent(this, DialogActivity.class));
+            }
+            else {
+                int answer = 0;         //00000~11111 이진수, 5문제 각각 맞으면 0, 틀리면 1
+                for(int i=0; i<5; i++){
+                    if(userAnswer[i] != questionAnswer[i]){
+                        answer++;
+                    }
+                    if(i != 4)    answer *= 10;
+                }
+                Intent intent = new Intent(Recommend.this, ScoringActivity.class);
+                intent.putExtra("prevActivity", 1);
+                intent.putExtra("timer", mainTime);
+                intent.putExtra("answer", answer);
+                startActivity(intent);
+                finish();
+            }
         }
     }
 
@@ -338,7 +352,7 @@ public class Recommend extends AppCompatActivity {
         for(int i=0; i<5; i++)
             ans_image[i].setAlpha(0);
         if(selected > -1)
-            ans_image[selected].setAlpha(100);
+            ans_image[selected].setAlpha(200);
     }
 
 }
