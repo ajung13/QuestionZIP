@@ -10,4 +10,9 @@ public class wrongNoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wrong_note);
     }
+
+    private void pdfprint(){
+        //레이아웃은 res>layout>activity_wrong_note.xml 에서 확인
+        //오답노트 activity에서 버튼을 누르면 이 함수를 실행함
+    }
 }
