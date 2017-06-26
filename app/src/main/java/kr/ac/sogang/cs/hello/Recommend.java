@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,23 +14,19 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import Jama.Matrix;
 
+import static kr.ac.sogang.cs.hello.PracticalActivity.connectionURL;
+
 public class Recommend extends AppCompatActivity {
-    final int row = 3, column = 10;
+    final int row = 4, column = 30;
     int questionNum = 0;
     TextView[] q = new TextView[6];
     TextView q_pr;
     ImageView[] ans_image = new ImageView[5];
     int[] userAnswer = {-1, -1, -1, -1, -1};
     int[] questionAnswer = new int[5];
-    int[] index = new int[10];                  //추천 문제 목록
+    int[] index = new int[30];                  //추천 문제 목록
     ScrollView scrl;
     Handler mHandler;
     public int mainTime = 0;
@@ -85,51 +80,6 @@ public class Recommend extends AppCompatActivity {
 
     }
 
-    public String connectionURL(String urladdr){
-        HttpURLConnection conn;
-        String line = "";
-        String result = "";
-        try{
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-
-            URL url = new URL(urladdr);
-            int redirectedCount = 0;
-            while(redirectedCount <= 1) {
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestProperty("User-Agent", "Android");
-                conn.setConnectTimeout(10000);
-                conn.setReadTimeout(10000);
-                conn.setUseCaches(false);
-                conn.setRequestMethod("GET");
-                conn.connect();
-
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    InputStream is = conn.getInputStream();
-                    BufferedReader in = new BufferedReader(new InputStreamReader(is));
-
-                    while((line=in.readLine())!=null){
-                        result = result.concat(line);
-                    }
-
-                    is.close();
-                    in.close();
-                    conn.disconnect();
-                    break;
-                } else if (conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP || conn.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM) {
-                    String redirectURL = conn.getHeaderField("Location");
-                    url = new URL(redirectURL);
-                }
-                redirectedCount++;
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
 
     public void recommend(){
         String urladdr = "http://questionzip.dothome.co.kr/SelectR2.php";
@@ -156,9 +106,9 @@ public class Recommend extends AppCompatActivity {
         try{
             JSONObject json = new JSONObject(target);
             JSONArray arr = json.getJSONArray("result");
-            for(int i=0; i<3; i++){
+            for(int i=0; i<4; i++){
                 JSONObject json2 = arr.getJSONObject(i);
-                for(int j=1; j<=10; j++){
+                for(int j=1; j<=30; j++){
                     String tmp = json2.get("q"+j).toString();
                     double tmp2 = Double.parseDouble(tmp);
                     mR.set(i, j-1, tmp2);
@@ -200,8 +150,8 @@ public class Recommend extends AppCompatActivity {
         final double alpha = 0.0002;
         final double beta = 0.02;
 
-        double[][] PP = {{1, 3}, {2, 3}, {7, 1}};
-        double[][] QQ = {{1, 3}, {4, 1}, {2, 3}, {5, 1}, {1, 3}, {4, 2}, {2, 3}, {5, 1}, {2, 3}, {5, 1}};
+        double[][] PP = {{1, 3}, {2, 3}, {7, 1}, {4, 6}};
+        double[][] QQ = {{1, 3}, {4, 1}, {2, 3}, {5, 1}, {1, 3}, {4, 2}, {2, 3}, {5, 1}, {2, 3}, {5, 1}, {1, 3}, {4, 1}, {2, 3}, {5, 1}, {1, 3}, {4, 2}, {2, 3}, {5, 1}, {2, 3}, {5, 1}, {1, 3}, {4, 1}, {2, 3}, {5, 1}, {1, 3}, {4, 2}, {2, 3}, {5, 1}, {2, 3}, {5, 1}};
         Matrix P = new Matrix(PP);
         Matrix Q = new Matrix(QQ);
         int K = 2;
@@ -241,18 +191,18 @@ public class Recommend extends AppCompatActivity {
 
     public void sort_recommend(){
         int idx = 1;
-        double[] qarray = new double[10];
+        double[] qarray = new double[30];
 
-        for(int i=0; i<10; i++){
+        for(int i=0; i<30; i++){
             qarray[i] = newmR.get(idx, i);
             index[i] = i;
         }
 
-        for(int i=0; i<10; i++){
+        for(int i=0; i<30; i++){
             double max = qarray[i];
             int indexmax = index[i];
             int tmp = i;
-            for(int j=i+1; j<10; j++){
+            for(int j=i+1; j<30; j++){
                 if(qarray[j] >= max){
                     max = qarray[j];
                     indexmax = index[j];
@@ -320,6 +270,8 @@ public class Recommend extends AppCompatActivity {
                 intent.putExtra("prevActivity", 1);
                 intent.putExtra("timer", mainTime);
                 intent.putExtra("answer", answer);
+                for(int i=0; i<5; i++)
+                    intent.putExtra("q" + i, index[i]);
                 startActivity(intent);
                 finish();
             }

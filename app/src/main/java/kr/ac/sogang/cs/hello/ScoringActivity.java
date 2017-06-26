@@ -16,13 +16,14 @@ import android.widget.Toast;
  */
 
 public class ScoringActivity extends AppCompatActivity {
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoring);
 
-        Intent intent = getIntent();
+        intent = getIntent();
 
         TextView el_time = (TextView)findViewById(R.id.el_time);
         int min, sec;
@@ -92,9 +93,36 @@ public class ScoringActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "into wrong note", Toast.LENGTH_LONG).show();
     }
 
+    public void viewComment(View v){
+        int selected = -1;
+        Intent next_intent;
+        switch(v.getId()){
+            case R.id.comment1:
+                selected = intent.getIntExtra("q0", -1);
+                break;
+            case R.id.comment2:
+                selected = intent.getIntExtra("q1", -1);
+                break;
+            case R.id.comment3:
+                selected = intent.getIntExtra("q2", -1);
+                break;
+            case R.id.comment4:
+                selected = intent.getIntExtra("q3", -1);
+                break;
+            case R.id.comment5:
+                selected = intent.getIntExtra("q4", -1);
+                break;
+        }
+
+        if(selected!=-1){
+            next_intent = new Intent(ScoringActivity.this, CommentActivity.class);
+            next_intent.putExtra("question", selected);
+            startActivity(next_intent);
+        }
+    }
+
     public void moreQuestion(View v){
-        Intent cur_intent = getIntent();
-        int prevActivity = cur_intent.getIntExtra("prevActivity", -1);
+        int prevActivity = intent.getIntExtra("prevActivity", -1);
         Intent next_intent;
         switch (prevActivity){
             case 1:

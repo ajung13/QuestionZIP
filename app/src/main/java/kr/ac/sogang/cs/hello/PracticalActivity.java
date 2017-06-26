@@ -22,7 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class PracticalActivity extends AppCompatActivity {
-    final int questions = 10;
+    final int questions = 30;
     int questionNum = 0;
     TextView[] q = new TextView[6];
     TextView q_pr;
@@ -32,6 +32,7 @@ public class PracticalActivity extends AppCompatActivity {
     ScrollView scrl;
     Handler mHandler;
     public int mainTime = 0;
+    int[] randidx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class PracticalActivity extends AppCompatActivity {
     }
 
     private void recommend(){
-        int[] randidx = new int[5];
+        randidx = new int[5];
         for(int i=0; i<5; i++){
             randidx[i] = (int)(Math.random()*questions);
             for(int j=0; j<i; j++){
@@ -86,12 +87,12 @@ public class PracticalActivity extends AppCompatActivity {
                 }
             }
         }
-/*        String tmp = "모의고사 기출문제 중 랜덤으로 문제를 추천하겠습니다\n랜덤문제: ";
+        String tmp = "모의고사 기출문제 중 랜덤으로 문제를 추천하겠습니다\n랜덤문제: ";
         for(int i=0; i<5; i++)
             tmp += randidx[i] + " ";
         tmp += "\n";
-        q[0].setText(tmp);*/
-        q[0].setText("모의고사 기출문제 중 랜덤으로 문제를 추천하겠습니다");
+        q[0].setText(tmp);
+//        q[0].setText("모의고사 기출문제 중 랜덤으로 문제를 추천하겠습니다");
         viewQuestions(randidx);
     }
 
@@ -171,6 +172,8 @@ public class PracticalActivity extends AppCompatActivity {
                 intent.putExtra("prevActivity", 2);
                 intent.putExtra("timer", mainTime);
                 intent.putExtra("answer", answer);
+                for(int i=0; i<5; i++)
+                    intent.putExtra("q" + i, randidx[i]);
                 startActivity(intent);
                 finish();
             }
@@ -206,7 +209,7 @@ public class PracticalActivity extends AppCompatActivity {
             ans_image[selected].setAlpha(200);
     }
 
-    public String connectionURL(String urladdr){
+    static public String connectionURL(String urladdr){
         HttpURLConnection conn;
         String line = "";
         String result = "";
