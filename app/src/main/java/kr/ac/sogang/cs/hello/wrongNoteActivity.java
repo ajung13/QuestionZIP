@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,20 +23,23 @@ public class wrongNoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wrong_note);
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
     }
 
-    public void pdfprint(View v){
- /*       String filename = "wrong_qs";
-        String string = "Hello world!";
-        FileOutputStream outputStream;
 
-      try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(string.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+    public void onUpload(View v){
+        Intent intent = new Intent(wrongNoteActivity.this, UploadQuestion.class);
+        startActivity(intent);
+        finish();
+    }
+
+
+    public void pdfprint(View v){
+        //레이아웃은 res>layout>activity_wrong_note.xml 에서 확인
+        //오답노트 activity에서 버튼을 누르면 이 함수를 실행함
+
 
         //res/assets에 있는 pdf파일 읽어서 open하자
         CopyReadPDFFromAssets();
@@ -98,11 +102,11 @@ public class wrongNoteActivity extends AppCompatActivity {
             out = openFileOutput(file.getName(), Context.MODE_PRIVATE);
 
             copyPdfFile(in, out);
-            /*in.close();
+            in.close();
             in = null;
             out.flush();
             out.close();
-            out = null;*/
+            out = null;
         } catch (Exception e)
         {
             Log.e("exception", e.getMessage());
@@ -135,4 +139,6 @@ public class wrongNoteActivity extends AppCompatActivity {
             out.write(buffer, 0, read);
         }
     }
+
+
 }

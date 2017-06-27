@@ -5,6 +5,7 @@ import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -28,7 +29,7 @@ public class UploadQuestion extends AppCompatActivity {
     public void onUpload(View v){
         String writedata = "";
 
-        final CheckBox[] cb = new CheckBox[10];
+        final CheckBox[] cb = new CheckBox[27];
         cb[0] = (CheckBox)findViewById(R.id.rq1);
         cb[1] = (CheckBox)findViewById(R.id.rq2);
         cb[2] = (CheckBox)findViewById(R.id.rq3);
@@ -39,8 +40,25 @@ public class UploadQuestion extends AppCompatActivity {
         cb[7] = (CheckBox)findViewById(R.id.rq8);
         cb[8] = (CheckBox)findViewById(R.id.rq9);
         cb[9] = (CheckBox)findViewById(R.id.rq10);
+        cb[10] = (CheckBox)findViewById(R.id.rq11);
+        cb[11] = (CheckBox)findViewById(R.id.rq12);
+        cb[12] = (CheckBox)findViewById(R.id.rq13);
+        cb[13] = (CheckBox)findViewById(R.id.rq14);
+        cb[14] = (CheckBox)findViewById(R.id.rq15);
+        cb[15] = (CheckBox)findViewById(R.id.rq16);
+        cb[16] = (CheckBox)findViewById(R.id.rq17);
+        cb[17] = (CheckBox)findViewById(R.id.rq18);
+        cb[18] = (CheckBox)findViewById(R.id.rq19);
+        cb[19] = (CheckBox)findViewById(R.id.rq20);
+        cb[20] = (CheckBox)findViewById(R.id.rq21);
+        cb[21] = (CheckBox)findViewById(R.id.rq22);
+        cb[22] = (CheckBox)findViewById(R.id.rq23);
+        cb[23] = (CheckBox)findViewById(R.id.rq24);
+        cb[24] = (CheckBox)findViewById(R.id.rq25);
+        cb[25] = (CheckBox)findViewById(R.id.rq26);
+        cb[26] = (CheckBox)findViewById(R.id.rq27);
 
-        for(int i=0; i<10; i++){
+        for(int i=0; i<27; i++){
             if(cb[i].isChecked()){
                 boolean result = phpTest(i);     //start from 0
                 if(result)
@@ -56,47 +74,44 @@ public class UploadQuestion extends AppCompatActivity {
 
     public boolean phpTest(final int qnum){
         String urladdr = "http://questionzip.dothome.co.kr/UploadR.php";
-        try{
-            String postData = "qnum=" + qnum;
-            URL url = new URL(urladdr);
-            int responsecode;
-            int redirectedCount = 0;
 
-            while(redirectedCount <= 2){
-                HttpURLConnection conn2 = (HttpURLConnection)url.openConnection();
-                conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                conn2.setRequestProperty("Connection", "close");
-                conn2.setRequestMethod("POST");
-                conn2.setConnectTimeout(10000);
-                conn2.setDoOutput(true);
-                conn2.setDoInput(true);
-                conn2.setUseCaches(false);
-                conn2.connect();
-//                responsecode = conn2.getResponseCode();
-                responsecode = HttpURLConnection.HTTP_OK;
-                if(responsecode==HttpURLConnection.HTTP_OK){
-                    OutputStream os = conn2.getOutputStream();
-                    os.write(postData.getBytes("EUC-KR"));
-                    os.flush();
-                    os.close();
-                    conn2.disconnect();
-                    return true;
-                }
-                else if(responsecode==HttpURLConnection.HTTP_MOVED_PERM ||
-                        responsecode==HttpURLConnection.HTTP_MOVED_TEMP){
-                    String redirectURL = conn2.getHeaderField("Location");
-                    url = new URL(redirectURL);
-                }
-                redirectedCount++;
-            }
+        try{
+            String postData = "qnum=1";
+            URL url = new URL(urladdr);
+
+            HttpURLConnection conn2 = (HttpURLConnection)url.openConnection();
+            conn2.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn2.setRequestProperty("Connection", "close");
+            conn2.setRequestMethod("POST");
+            conn2.setConnectTimeout(10000);
+            conn2.setDoOutput(true);
+            conn2.setDoInput(true);
+            conn2.setUseCaches(false);
+            conn2.connect();
+
+            OutputStream os = conn2.getOutputStream();
+            os.write(postData.getBytes("EUC-KR"));
+            os.flush();
+            os.close();
+
+            conn2.disconnect();
+            return true;
+
         } catch(Exception e){
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             String exceptionAsString = sw.toString();
             Log.e("phpTest", exceptionAsString);
-            return false;
         }
         return false;
+    }
+
+    public void onJuly(View v){
+        Button btn = (Button)findViewById(R.id.july);
+        if(btn.getAlpha()==0)
+            btn.setAlpha(0.4f);
+        else
+            btn.setAlpha(0);
     }
 
 
